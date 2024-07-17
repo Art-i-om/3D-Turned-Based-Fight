@@ -13,7 +13,7 @@ public class UnitActionSystemUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI actionPointsText;
 
     private List<ActionButtonUI> actionButtonUIList;
-
+    
     private void Awake()
     {
         actionButtonUIList = new List<ActionButtonUI>();
@@ -30,12 +30,12 @@ public class UnitActionSystemUI : MonoBehaviour
         CreateUnitActionButtons();
         UpdateSelectedVisual();
     }
-
+    
     private void CreateUnitActionButtons()
     {
         foreach (Transform buttonTransform in actionButtonContainerTransform)
         {
-            Destroy(buttonTransform.gameObject);    
+            Destroy(buttonTransform.gameObject);
         }
         
         actionButtonUIList.Clear();
@@ -47,6 +47,7 @@ public class UnitActionSystemUI : MonoBehaviour
             Transform actionButtonTransform = Instantiate(actionButtonPrefab, actionButtonContainerTransform);
             ActionButtonUI actionButtonUI = actionButtonTransform.GetComponent<ActionButtonUI>();
             actionButtonUI.SetBaseAction(baseAction);
+            SkillsReload.Instance.UpdateSkillsReloadUI(actionButtonUIList);
             
             actionButtonUIList.Add(actionButtonUI);
         }
@@ -57,6 +58,7 @@ public class UnitActionSystemUI : MonoBehaviour
         CreateUnitActionButtons();
         UpdateSelectedVisual();
         UpdateActionPoints();
+        
     }
     
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
@@ -66,9 +68,11 @@ public class UnitActionSystemUI : MonoBehaviour
 
     private void UnitActionSystem_OnActionStarted(object sender, EventArgs e)
     {
+        CreateUnitActionButtons();
         UpdateActionPoints();
+        SkillsReload.Instance.UpdateSkillsReloadUI(actionButtonUIList);
     }
-    
+
     // private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
     // {
     //     UpdateActionPoints();

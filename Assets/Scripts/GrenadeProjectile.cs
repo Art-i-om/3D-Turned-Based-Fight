@@ -66,7 +66,6 @@ public class GrenadeProjectile : MonoBehaviour
         targetPosition = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
 
         positionXZ = transform.position;
-        positionXZ.y = 0;
         totalDistance = Vector3.Distance(positionXZ, targetPosition);
     }
 }

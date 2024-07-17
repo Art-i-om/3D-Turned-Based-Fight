@@ -19,6 +19,7 @@ public class ShootAction : BaseAction
         Shooting,
         Cooloff
     }
+    
     [SerializeField] private int maxShootDistance = 7;
     [SerializeField] private LayerMask obstaclesLayerMask;
     
@@ -28,6 +29,8 @@ public class ShootAction : BaseAction
     private Unit targetUnit;
 
     private bool canShootBullet;
+
+    [SerializeField] private int damage;
     
     private void Update()
     {
@@ -80,6 +83,11 @@ public class ShootAction : BaseAction
                 ActionComplete();
                 break;
         }
+    }
+
+    public int GetDamage()
+    {
+        return damage;
     }
 
     private void Shoot()
@@ -167,6 +175,8 @@ public class ShootAction : BaseAction
         stateTimer = aimingStateTime;
 
         canShootBullet = true;
+        
+        StartReloading();
     }
 
     public int GetMaxShootDistance()
@@ -191,6 +201,11 @@ public class ShootAction : BaseAction
     }
     
     public override int GetActionPointsCost()
+    {
+        return 2;
+    }
+
+    public override int ReloadTime()
     {
         return 2;
     }

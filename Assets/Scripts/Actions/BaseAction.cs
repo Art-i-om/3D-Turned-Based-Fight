@@ -9,6 +9,8 @@ public abstract class BaseAction : MonoBehaviour
     protected bool isActive;
     protected Action onActionComplete;
 
+    protected int reloadLeft;
+    
     protected virtual void Awake()
     {
         unit = GetComponent<Unit>();
@@ -67,4 +69,16 @@ public abstract class BaseAction : MonoBehaviour
     }
 
     public abstract EnemyAIAction GetEnemyAIAction(GridPosition gridPosition);
+
+    public abstract int ReloadTime();
+
+    public void StartReloading()
+    {
+        reloadLeft = ReloadTime();
+    }
+
+    public int GetReloadLeft()
+    {
+        return reloadLeft;
+    }
 }

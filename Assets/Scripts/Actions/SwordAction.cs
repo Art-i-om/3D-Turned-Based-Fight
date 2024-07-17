@@ -7,7 +7,7 @@ public class SwordAction : BaseAction
 {
     public event EventHandler OnSwordActionStarted;
     public event EventHandler OnSwordActionCompleted;
-    
+
     private enum State
     {
         SwingingSwordBeforeHit,
@@ -18,7 +18,9 @@ public class SwordAction : BaseAction
 
     private State state;
     private float stateTimer;
-    private Unit targetUnit;
+    [HideInInspector] public Unit targetUnit;
+    
+    [SerializeField] private int damage;
 
     private void Update()
     {
@@ -54,13 +56,17 @@ public class SwordAction : BaseAction
                 state = State.SwingingSwordAfterHit;
                 float afterHitStateTime = 0.5f;
                 stateTimer = afterHitStateTime;
-                targetUnit.Damage(100);
                 break;
             case State.SwingingSwordAfterHit:
                 OnSwordActionCompleted?.Invoke(this, EventArgs.Empty);
                 ActionComplete();
                 break;
         }
+    }
+
+    public int GetDamage()
+    {
+        return damage;
     }
 
     public override string GetActionName()
@@ -75,10 +81,12 @@ public class SwordAction : BaseAction
         state = State.SwingingSwordBeforeHit;
         float beforeHitStateTime = 0.7f;
         stateTimer = beforeHitStateTime;
-        
+
         OnSwordActionStarted?.Invoke(this, EventArgs.Empty);
         
         ActionStart(onActionComplete);
+        
+        StartReloading();
     }
 
     public override List<GridPosition> GetValidActionGridPositionList()
@@ -130,5 +138,15 @@ public class SwordAction : BaseAction
     public int GetMaxSwordDistance()
     {
         return maxSwordDistance;
+    }
+    
+    public override int GetActionPointsCost()
+    {
+        return 2;
+    }
+    
+    public override int ReloadTime()
+    {
+        return 2;
     }
 }

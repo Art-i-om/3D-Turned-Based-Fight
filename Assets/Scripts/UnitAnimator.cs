@@ -2,16 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
+[RequireComponent(typeof(Unit))]
 public class UnitAnimator : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     [HideInInspector] public Vector3 targetUnitShootAtPosition;
-    
-    [SerializeField] private Transform bowTransform;
-    [SerializeField] private Transform leftSwordTransform;
-    [SerializeField] private Transform rightSwordTransform;
-    
+
     [HideInInspector] public Unit targetUnit;
 
     private void Awake()
@@ -32,21 +30,24 @@ public class UnitAnimator : MonoBehaviour
             swordAction.OnSwordActionStarted += swordAction_OnSwordActionStarted;
             swordAction.OnSwordActionCompleted += swordAction_OnSwordActionCompleted;
         }
+
+        if (TryGetComponent<GrenadeAction>(out GrenadeAction grenadeAction))
+        {
+            grenadeAction.OnGrenadeTrow += grenadeAction_OnGrenadeTrow;
+        }
     }
 
-    private void Start()
+    private void grenadeAction_OnGrenadeTrow(object sender, EventArgs e)
     {
-        EquipBow();
+        animator.SetTrigger("Throw");
     }
 
     private void swordAction_OnSwordActionCompleted(object sender, EventArgs e)
     {
-        EquipBow();
     }
 
     private void swordAction_OnSwordActionStarted(object sender, EventArgs e)
     {
-        EquipSword();
         animator.SetTrigger("SwordSlash");
     }
 
@@ -66,19 +67,5 @@ public class UnitAnimator : MonoBehaviour
         
         targetUnitShootAtPosition = e.targetUnit.GetWorldPosition();
         targetUnit = e.targetUnit;
-    }
-
-    private void EquipSword()
-    {
-        leftSwordTransform.gameObject.SetActive(true);
-        rightSwordTransform.gameObject.SetActive(true);
-        bowTransform.gameObject.SetActive(false);
-    }
-
-    private void EquipBow()
-    {
-        leftSwordTransform.gameObject.SetActive(false);
-        rightSwordTransform.gameObject.SetActive(false);
-        bowTransform.gameObject.SetActive(true);
     }
 }

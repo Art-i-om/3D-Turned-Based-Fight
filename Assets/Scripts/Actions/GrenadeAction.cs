@@ -5,9 +5,27 @@ using UnityEngine;
 
 public class GrenadeAction : BaseAction
 {
-    [SerializeField] private Transform grenadeProjectilePrefab;
+    public event EventHandler OnGrenadeTrow;
     
+    [SerializeField] private Transform grenadeProjectilePrefab;
+
     [SerializeField] private int maxThrowDistance = 7;
+
+    [HideInInspector] public GridPosition gridPosition;
+    
+    private enum State
+    {
+        Aiming,
+        Throwing,
+        Cooloff
+    }
+    
+    private State state;
+    private float stateTimer;
+
+    private Vector3 ThrowPosition;
+    
+    private bool canThrowGrenade;
     
     private void Update()
     {
@@ -16,6 +34,55 @@ public class GrenadeAction : BaseAction
             return;
         }
         
+        stateTimer -= Time.deltaTime;
+        
+        switch (state)
+        {
+            case State.Aiming:
+                Vector3 aimDir = (ThrowPosition - unit.GetWorldPosition()).normalized;
+                float rotateSpeed = 20f;
+                transform.forward = Vector3.Lerp(transform.forward, aimDir, Time.deltaTime * rotateSpeed);
+                break;
+            case State.Throwing:
+                if (canThrowGrenade)
+                {
+                    Throw();
+                    canThrowGrenade = false;
+                }
+                break;
+            case State.Cooloff:
+                break;
+        }
+        
+        if (stateTimer <= 0f)
+        {
+            NextState();
+        }
+    }
+    
+    private void NextState()
+    {
+        switch (state)
+        {
+            case State.Aiming:
+                state = State.Throwing;
+                float shootingStateTime = 0.1f;
+                stateTimer = shootingStateTime;
+                break;
+            case State.Throwing:
+                state = State.Cooloff;
+                float coolOffStateTime = 0.5f;
+                stateTimer = coolOffStateTime;
+                break;
+            case State.Cooloff:
+                ActionComplete();
+                break;
+        }
+    }
+    
+    private void Throw()
+    {
+        OnGrenadeTrow?.Invoke(this, EventArgs.Empty);
     }
 
     public override string GetActionName()
@@ -25,14 +92,22 @@ public class GrenadeAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        Transform grenadeProjectileTransform = Instantiate(grenadeProjectilePrefab, unit.GetWorldPosition(), Quaternion.identity);
-        GrenadeProjectile grenadeProjectile = grenadeProjectileTransform.GetComponent<GrenadeProjectile>();
-        grenadeProjectile.Setup(gridPosition, OnGrenadeBehaviourComplete);
-        
         ActionStart(onActionComplete);
+        
+        this.gridPosition = gridPosition;
+        
+        ThrowPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
+        
+        state = State.Aiming;
+        float aimingStateTime = 1f;
+        stateTimer = aimingStateTime;
+
+        canThrowGrenade = true;
+        
+        StartReloading();
     }
 
-    private void OnGrenadeBehaviourComplete()
+    public void OnGrenadeBehaviourComplete()
     {
         ActionComplete();
     }
@@ -75,5 +150,10 @@ public class GrenadeAction : BaseAction
             gridPosition = gridPosition,
             actionValue = 0,
         };
+    }
+    
+    public override int ReloadTime()
+    {
+        return 2;
     }
 }

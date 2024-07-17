@@ -28,6 +28,8 @@ public class SpinAction : BaseAction
     {
         ActionStart(onActionComplete);
         totalSpinAmount = 0f;
+        
+        StartReloading();
     }
 
     public override string GetActionName()
@@ -58,5 +60,10 @@ public class SpinAction : BaseAction
             gridPosition = gridPosition,
             actionValue = 0
         };
+    }
+
+    public override int ReloadTime()
+    {
+        return 2;
     }
 }

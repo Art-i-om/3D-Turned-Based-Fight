@@ -59,6 +59,8 @@ public class MoveAction : BaseAction
         OnStartMoving?.Invoke(this, EventArgs.Empty);
         
         ActionStart(onActionComplete);
+        
+        StartReloading();
     }
 
     public override List<GridPosition> GetValidActionGridPositionList()  
@@ -128,5 +130,10 @@ public class MoveAction : BaseAction
             gridPosition = gridPosition,
             actionValue = targetCountAtGridPosition * 10,
         };
+    }
+    
+    public override int ReloadTime()
+    {
+        return 0;
     }
 }

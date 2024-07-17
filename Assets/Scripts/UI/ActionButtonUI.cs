@@ -10,6 +10,8 @@ public class ActionButtonUI : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private GameObject selectedGameObject;
 
+    [SerializeField] private GameObject reloadUI;
+
     private BaseAction baseAction;
 
     public void SetBaseAction(BaseAction baseAction)
@@ -27,5 +29,21 @@ public class ActionButtonUI : MonoBehaviour
     {
         BaseAction selectedBaseAction = UnitActionSystem.Instance.GetSelectedAction();
         selectedGameObject.SetActive(selectedBaseAction == baseAction);
+    }
+
+    public void UpdateReloadVisual()
+    {
+        BaseAction selectedBaseAction = UnitActionSystem.Instance.GetSelectedAction();
+        reloadUI.SetActive(selectedBaseAction == baseAction);
+    }
+
+    public BaseAction GetBaseAction()
+    {
+        return baseAction;
+    }
+
+    public GameObject GetReloadUI()
+    {
+        return reloadUI;
     }
 }

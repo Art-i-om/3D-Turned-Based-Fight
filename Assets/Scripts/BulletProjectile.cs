@@ -10,12 +10,13 @@ public class BulletProjectile : MonoBehaviour
 
     private Vector3 targetPosition;
     private Unit targetUnit;
+
+    private int damage;
     
     public void Setup(Vector3 targetPosition, Unit targetUnit)
     {
         this.targetPosition = targetPosition;
         this.targetUnit = targetUnit;
-
     }
 
     private void Update()
@@ -37,9 +38,14 @@ public class BulletProjectile : MonoBehaviour
             
             Destroy(gameObject);
             
-            targetUnit.Damage(40);
+            targetUnit.Damage(damage);
 
             Instantiate(bulletHitVFXPrefab, targetPosition, Quaternion.identity);
         }
+    }
+
+    public void SetDamage(int damageAmount)
+    {
+        damage = damageAmount;
     }
 }
